@@ -1,0 +1,12 @@
+[user]
+  name = Adan Nogueira
+  email = adan.nogueira@gmail.com
+
+[pull]
+  ff = only
+
+[init]
+  defaultBranch = main
+
+[core]
+  editor = nvim
