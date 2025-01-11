@@ -11,6 +11,6 @@ stow --target ~/ . -v
 # Setup Zsh
 command -v zsh | sudo tee -a /etc/shells
 sudo chsh -s $(which zsh) $USER
-antibody bundle < ~/dotfiles/.zsh_plugins.txt > ~/.zsh_plugins.sh
+antibody bundle < ~/dotfiles/zsh/.zsh_plugins.txt > ~/.zsh_plugins.sh
 exec zsh
 
