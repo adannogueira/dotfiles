@@ -5,9 +5,8 @@ sudo apt-get update -y
 sudo apt-get install bat -y
 
 # Stow everything
-mkdir ~/.config
 cd ~/dotfiles
-stow --target ~/.config . -v
+stow --target ~/ . -v
 
 # Setup Zsh
 command -v zsh | sudo tee -a /etc/shells
