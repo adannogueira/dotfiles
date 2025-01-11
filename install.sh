@@ -6,6 +6,7 @@ sudo apt-get install bat -y
 curl -sfL git.io/antibody | sudo sh -s - -b /usr/local/bin
 
 # Stow everything
+rm .gitconfig .zshrc
 cd ~/dotfiles
 stow git
 stow nvim
