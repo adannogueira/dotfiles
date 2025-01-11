@@ -3,7 +3,7 @@
 # Install Packages
 sudo apt-get update -y
 sudo apt-get install bat -y
-curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
+curl -sfL git.io/antibody | sudo sh -s - -b /usr/local/bin
 
 # Stow everything
 cd ~/dotfiles
