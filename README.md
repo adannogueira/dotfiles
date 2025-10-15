@@ -1,32 +1,56 @@
-# Auto install (PC)
-## One-line bootstrap (chezmoi will automatically run .install-system.sh)
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/adannogueira/dotfiles.git
+# Dotfiles with Chezmoi + Bitwarden
 
-# Manual install (PC)
-## Clone the repo first
-git clone https://github.com/adannogueira/dotfiles.git /tmp/dotfiles
+## Bootstrap on New Machine
 
-## Run the bootstrap script
-bash /tmp/dotfiles/.install-system.sh https://github.com/adannogueira/dotfiles.git
+### 1. Install Bitwarden CLI and Login
+```bash
+# Install Bitwarden CLI
+curl -L "https://vault.bitwarden.com/download/?app=cli&platform=linux" -o bw.zip
+unzip bw.zip
+chmod +x bw
+sudo mv bw /usr/local/bin/
+rm bw.zip
 
-# Auto install (Devcontainer)
+# Login (will prompt for 2FA if enabled)
+bw login
 
-## Add to your .devcontainer/devcontainer.json:
-```json
-{
-  "postCreateCommand": "sh -c \"$(curl -fsLS https://raw.githubusercontent.com/adannogueira/dotfiles/main/bootstrap.sh)\" -- https://github.com/adannogueira/dotfiles.git"
-}
+# Unlock and export session
+export BW_SESSION="$(bw unlock --raw)"
 ```
 
-## Or create .devcontainer/postCreateCommand.sh:
+### 2. Bootstrap with Chezmoi
 ```bash
-#!/bin/bash
-set -e
+# Install chezmoi and apply dotfiles
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/adannogueira/dotfiles.git
+```
 
-# Install essentials
-apt-get update
-apt-get install -y curl git
+### 3. Post-Installation
+```bash
+# Complete Neovim setup
+nvim
 
-# Bootstrap dotfiles
-sh -c "$(curl -fsLS https://raw.githubusercontent.com/adannogueira/dotfiles/main/bootstrap.sh)" -- https://github.com/adannogueira/dotfiles.git
+# Restart shell or log out/in for zsh changes
+```
+
+## Updating Dotfiles
+```bash
+# Pull latest changes and apply
+chezmoi update
+
+# Edit a file
+chezmoi edit ~/.zshrc
+
+# Add a new file
+chezmoi add ~/.newfile
+
+# Apply changes
+chezmoi apply
+```
+
+## Refreshing Bitwarden Session
+
+If templates fail due to expired session:
+```bash
+export BW_SESSION="$(bw unlock --raw)"
+chezmoi apply
 ```

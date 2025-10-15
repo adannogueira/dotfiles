@@ -1,0 +1,52 @@
+#!/bin/bash
+set -e
+
+echo "Installing prerequisites..."
+
+# Install Bitwarden CLI if not present
+if ! command -v bw &> /dev/null; then
+    echo "Installing Bitwarden CLI..."
+    curl -L "https://vault.bitwarden.com/download/?app=cli&platform=linux" -o /tmp/bw.zip
+    unzip /tmp/bw.zip -d /tmp
+    chmod +x /tmp/bw
+    sudo mv /tmp/bw /usr/local/bin/
+    rm /tmp/bw.zip
+fi
+
+# Check if already logged in
+if bw status | grep -q '"status":"unauthenticated"'; then
+    echo ""
+    echo "Please login to Bitwarden:"
+    echo "If you have 2FA enabled, you'll need to provide the code."
+    echo ""
+    read -p "Enter your Bitwarden email: " BW_EMAIL
+    read -sp "Enter your Bitwarden password: " BW_PASSWORD
+    echo ""
+    read -p "Enter your 2FA code (leave empty if no 2FA): " BW_2FA
+    
+    if [ -n "$BW_2FA" ]; then
+        echo "$BW_PASSWORD" | bw login "$BW_EMAIL" --code "$BW_2FA"
+    else
+        echo "$BW_PASSWORD" | bw login "$BW_EMAIL"
+    fi
+fi
+
+# Check if BW_SESSION is set, if not unlock
+if [ -z "$BW_SESSION" ]; then
+    echo ""
+    echo "Unlocking Bitwarden vault..."
+    export BW_SESSION="$(bw unlock --raw)"
+    
+    if [ -z "$BW_SESSION" ]; then
+        echo "ERROR: Failed to unlock Bitwarden vault"
+        exit 1
+    fi
+    
+    echo ""
+    echo "SUCCESS! Bitwarden unlocked."
+    echo "IMPORTANT: Run this command in your current shell:"
+    echo "  export BW_SESSION=\"$BW_SESSION\""
+    echo ""
+fi
+
+echo "Prerequisites installed successfully"
