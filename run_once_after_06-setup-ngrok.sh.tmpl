@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+if command -v ngrok &> /dev/null; then
+    echo "Configuring ngrok..."
+    ngrok config add-authtoken {{ (bitwarden "item" "ngrok-token").login.password }}
+fi

@@ -1,0 +1,16 @@
+# Can use templates: {{ .chezmoi.hostname }}
+Host dinheirow-prd
+  HostName 172.31.97.253
+  User ubuntu
+  IdentityFile C:\Users\adann\.ssh\awsdev.pem
+
+Host remove-dev
+  HostName ec2-34-238-160-178.compute-1.amazonaws.com
+  User ubuntu
+  IdentityFile C:\Users\adann\.ssh\remote-dev.pem
+
+# AllowAgentForwarding yes
+
+Host *
+    IdentityFile ~/.ssh/id_ed25519
+    AddKeysToAgent yes

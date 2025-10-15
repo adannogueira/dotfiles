@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+echo "Setting up Atuin..."
+
+# Install Atuin
+if ! command -v atuin &> /dev/null; then
+    curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+fi
+
+# Login to Atuin using Bitwarden credentials
+ATUIN_USERNAME="{{ (bitwarden "item" "atuin-credentials").login.username }}"
+ATUIN_PASSWORD="{{ (bitwarden "item" "atuin-credentials").login.password }}"
+ATUIN_KEY="{{ (bitwardenFields "item" "atuin-credentials").synckey.value }}"
+
+$HOME/.atuin/bin/atuin login -u "$ATUIN_USERNAME" -p "$ATUIN_PASSWORD" -k "$ATUIN_KEY"
+$HOME/.atuin/bin/atuin sync
+
+echo "Atuin configured successfully"

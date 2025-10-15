@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+echo "Setting up Zsh..."
+
+# Install antibody
+if ! command -v antibody &> /dev/null; then
+    curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
+fi
+
+# Generate plugins
+if [ -f ~/.zsh_plugins.txt ]; then
+    antibody bundle < ~/.zsh_plugins.txt > ~/.zsh_plugins.sh
+fi
+
+# Set Zsh as default shell
+if [ "$SHELL" != "$(which zsh)" ]; then
+    command -v zsh | sudo tee -a /etc/shells
+    sudo chsh -s $(which zsh) $USER
+    echo "Zsh set as default shell. Please log out and log back in."
+fi
