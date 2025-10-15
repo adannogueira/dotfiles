@@ -7,7 +7,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Source Stuff
-if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
 source ~/.zsh_plugins.sh
 
 # Aliases
@@ -23,3 +22,5 @@ autoload -Uz add-zsh-hook; append_history() { fc -W }; add-zsh-hook precmd appen
 . "$HOME/.atuin/bin/env"
 
 eval "$(atuin init zsh)"
+PATH="$PATH:$HOME/bin"
+PATH="$PATH:/opt/nvim"
