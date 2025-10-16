@@ -29,5 +29,3 @@
 
 [commit]
   gpgsign = true
-[credential]
-	helper = "!f() { /root/.vscode-server-insiders/bin/f030344cf19e76e6b47d2d8ab003780a7fdb8171-insider/node /tmp/vscode-remote-containers-3da31ede-ab73-4ad3-95ec-b7792f0b3096.js git-credential-helper $*; }; f"
