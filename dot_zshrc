@@ -14,6 +14,14 @@ alias vim='nvim'
 alias cat='bat'
 alias ls='ls -al --color'
 alias update-antibody='antibody bundle < $HOME/.zsh_plugins.txt > $HOME/.zsh_plugins.sh'
+git() {
+    if [[ $1 == "c" ]]; then
+        shift
+        command git commit -m "$@"
+    else
+        command git "$@"
+    fi
+}
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
