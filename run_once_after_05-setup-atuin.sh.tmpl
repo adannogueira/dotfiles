@@ -6,6 +6,26 @@ echo "Setting up Atuin..."
 # Install Atuin
 if ! command -v atuin &> /dev/null; then
     curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+    export PATH="$HOME/.atuin/bin:$PATH"
+fi
+
+ATUIN_BIN="$HOME/.atuin/bin/atuin"
+
+# Check if already logged in by looking for username in status
+ATUIN_STATUS=$($ATUIN_BIN status 2>&1 || true)
+
+if echo "$ATUIN_STATUS" | grep -q "Username:"; then
+    CURRENT_USER=$(echo "$ATUIN_STATUS" | grep "Username:" | awk '{print $2}')
+    echo "✓ Already logged in to Atuin as: $CURRENT_USER"
+    
+    # Try to sync
+    if $ATUIN_BIN sync 2>&1; then
+        echo "✓ Atuin sync successful"
+        exit 0
+    else
+        echo "⚠ Sync failed, but already logged in. Continuing..."
+        exit 0
+    fi
 fi
 
 # Login to Atuin using Bitwarden credentials
