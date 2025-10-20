@@ -15,7 +15,9 @@ if command -v apt-get &> /dev/null; then
         ripgrep \
         fd-find \
         fzf \
-        build-essential
+        build-essential \
+        fuse \
+        libfuse2
 elif command -v pacman &> /dev/null; then
     # Arch Linux
     sudo pacman -Sy --noconfirm \
@@ -26,7 +28,8 @@ elif command -v pacman &> /dev/null; then
         ripgrep \
         fd \
         fzf \
-        base-devel
+        base-devel \
+        fuse2
 elif command -v dnf &> /dev/null; then
     # Fedora
     sudo dnf install -y \
@@ -36,5 +39,7 @@ elif command -v dnf &> /dev/null; then
         zsh \
         ripgrep \
         fd-find \
-        fzf
+        fzf \
+        fuse \
+        fuse-libs
 fi

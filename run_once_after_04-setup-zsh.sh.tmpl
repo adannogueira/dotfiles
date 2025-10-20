@@ -10,6 +10,22 @@ fi
 
 # Generate plugins
 if [ -f ~/.zsh_plugins.txt ]; then
+    echo "Generating zsh plugins from ~/.zsh_plugins.txt..."
+    antibody bundle < ~/.zsh_plugins.txt > ~/.zsh_plugins.sh
+else
+    echo "Warning: ~/.zsh_plugins.txt not found, creating default plugins..."
+    cat > ~/.zsh_plugins.txt << 'EOF'
+robbyrussell/oh-my-zsh path:plugins/command-not-found
+robbyrussell/oh-my-zsh path:plugins/git-extras
+robbyrussell/oh-my-zsh path:plugins/node
+robbyrussell/oh-my-zsh path:plugins/asdf
+
+romkatv/powerlevel10k
+
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-completions
+zsh-users/zsh-syntax-highlighting
+EOF
     antibody bundle < ~/.zsh_plugins.txt > ~/.zsh_plugins.sh
 fi
 

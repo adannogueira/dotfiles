@@ -6,11 +6,25 @@ echo "Installing Neovim..."
 # Install Neovim based on distro
 if command -v apt-get &> /dev/null; then
     # Debian/Ubuntu - use AppImage for latest version
+    echo "Installing Neovim AppImage..."
     curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
     chmod u+x nvim-linux-x86_64.appimage
-    mkdir -p /opt/nvim
-    mv nvim-linux-x86_64.appimage /opt/nvim/nvim
-    export PATH="$PATH:/opt/nvim/"
+    sudo mkdir -p /opt/nvim
+    sudo mv nvim-linux-x86_64.appimage /opt/nvim/nvim
+    
+    # Create symlink in /usr/local/bin for easier access
+    sudo ln -sf /opt/nvim/nvim /usr/local/bin/nvim
+    
+    # Verify FUSE is working
+    if ! /opt/nvim/nvim --version &> /dev/null; then
+        echo "AppImage not working, trying to extract..."
+        cd /opt/nvim
+        sudo ./nvim --appimage-extract
+        sudo mv squashfs-root nvim-extracted
+        sudo rm nvim
+        sudo ln -sf /opt/nvim/nvim-extracted/AppRun /opt/nvim/nvim
+        sudo ln -sf /opt/nvim/nvim /usr/local/bin/nvim
+    fi
 elif command -v pacman &> /dev/null; then
     # Arch
     sudo pacman -S --noconfirm neovim
@@ -21,8 +35,14 @@ fi
 
 # Verify installation
 if ! command -v nvim &> /dev/null; then
-    echo "ERROR: Neovim installation failed"
-    exit 1
+    echo "ERROR: Neovim installation failed - nvim not found in PATH"
+    echo "Trying to add /usr/local/bin to PATH and retry..."
+    export PATH="/usr/local/bin:$PATH"
+    if ! command -v nvim &> /dev/null; then
+        echo "ERROR: Neovim installation completely failed"
+        exit 1
+    fi
 fi
 
 echo "Neovim installed successfully"
+nvim --version

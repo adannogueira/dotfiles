@@ -30,5 +30,7 @@ autoload -Uz add-zsh-hook; append_history() { fc -W }; add-zsh-hook precmd appen
 . "$HOME/.atuin/bin/env"
 
 eval "$(atuin init zsh)"
+
+# Add directories to PATH
 PATH="$PATH:$HOME/bin"
 PATH="$PATH:/opt/nvim"
