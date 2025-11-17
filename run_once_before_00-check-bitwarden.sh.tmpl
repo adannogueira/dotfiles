@@ -1,15 +1,24 @@
 #!/bin/bash
 set -e
 
-# Install Bitwarden CLI if not present
+echo "Checking Bitwarden setup..."
+
+# Check if bw CLI is installed
 if ! command -v bw &> /dev/null; then
-    echo "Installing Bitwarden CLI..."
-    curl -L "https://vault.bitwarden.com/download/?app=cli&platform=linux" -o /tmp/bw.zip
-    unzip -q /tmp/bw.zip -d /tmp
-    chmod +x /tmp/bw
-    sudo mv /tmp/bw /usr/local/bin/
-    rm /tmp/bw.zip
-    echo "Bitwarden CLI installed"
+    echo ""
+    echo "=========================================="
+    echo "ERROR: Bitwarden CLI not found!"
+    echo "=========================================="
+    echo ""
+    echo "Please install and login to Bitwarden CLI first:"
+    echo ""
+    echo "# Install, login, and export session (one-liner):"
+    echo "curl -L 'https://vault.bitwarden.com/download/?app=cli&platform=linux' -o bw.zip && unzip bw.zip && chmod +x bw && sudo mv bw /usr/local/bin/ && rm bw.zip && export BW_SESSION=\"\$(bw login --raw)\""
+    echo ""
+    echo "# Then run chezmoi:"
+    echo "chezmoi init --apply https://github.com/adannogueira/dotfiles.git"
+    echo ""
+    exit 1
 fi
 
 # Check if BW_SESSION is set
@@ -19,16 +28,11 @@ if [ -z "$BW_SESSION" ]; then
     echo "ERROR: BW_SESSION environment variable is not set!"
     echo "=========================================="
     echo ""
-    echo "Please run these commands first:"
+    echo "Please unlock your vault and export the session:"
+    echo "  export BW_SESSION=\"\$(bw unlock --raw)\""
     echo ""
-    echo "1. Login to Bitwarden (with 2FA if enabled):"
-    echo "   bw login"
-    echo ""
-    echo "2. Unlock and export session:"
-    echo "   export BW_SESSION=\"\$(bw unlock --raw)\""
-    echo ""
-    echo "3. Then run chezmoi again:"
-    echo "   chezmoi apply"
+    echo "Then run chezmoi again:"
+    echo "  chezmoi apply"
     echo ""
     exit 1
 fi
@@ -44,3 +48,66 @@ if ! bw unlock --check &> /dev/null; then
 fi
 
 echo "✓ Bitwarden session is valid"
+
+# Sync vault
+echo "Syncing Bitwarden vault..."
+if ! bw sync &> /dev/null; then
+    echo "⚠ Warning: Failed to sync vault, using cached data"
+else
+    echo "✓ Vault synced"
+fi
+
+# Verify all required items exist
+echo "Checking required Bitwarden items..."
+
+REQUIRED_ITEMS=(
+    "gpg-private-key"
+    "ssh-private-key"
+    "ssh-public-key"
+    "atuin-credentials"
+    "ngrok-token"
+)
+
+MISSING_ITEMS=()
+
+for item in "${REQUIRED_ITEMS[@]}"; do
+    if ! bw get item "$item" &> /dev/null; then
+        MISSING_ITEMS+=("$item")
+    fi
+done
+
+if [ ${#MISSING_ITEMS[@]} -ne 0 ]; then
+    echo ""
+    echo "=========================================="
+    echo "ERROR: Missing required Bitwarden items!"
+    echo "=========================================="
+    echo ""
+    echo "The following items are required but not found:"
+    for item in "${MISSING_ITEMS[@]}"; do
+        echo "  ✗ $item"
+    done
+    echo ""
+    echo "Please create these items in your Bitwarden vault:"
+    echo ""
+    echo "1. gpg-private-key:"
+    echo "   - Notes: base64-encoded GPG private key"
+    echo "   - Custom field 'passphrase': GPG key passphrase"
+    echo ""
+    echo "2. ssh-private-key:"
+    echo "   - Notes: base64-encoded SSH private key"
+    echo ""
+    echo "3. ssh-public-key:"
+    echo "   - Notes: SSH public key content"
+    echo ""
+    echo "4. atuin-credentials:"
+    echo "   - Username: atuin username"
+    echo "   - Password: atuin password"
+    echo "   - Custom field 'synckey': atuin sync key"
+    echo ""
+    echo "5. ngrok-token:"
+    echo "   - Password: ngrok auth token"
+    echo ""
+    exit 1
+fi
+
+echo "✓ All required Bitwarden items found"
