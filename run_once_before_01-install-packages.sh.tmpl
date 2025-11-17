@@ -17,7 +17,9 @@ if command -v apt-get &> /dev/null; then
         fzf \
         build-essential \
         fuse \
-        libfuse2
+        libfuse2 \
+        gnupg2 \
+        gpg
 elif command -v pacman &> /dev/null; then
     # Arch Linux
     sudo pacman -Sy --noconfirm \
@@ -29,7 +31,8 @@ elif command -v pacman &> /dev/null; then
         fd \
         fzf \
         base-devel \
-        fuse2
+        fuse2 \
+        gnupg
 elif command -v dnf &> /dev/null; then
     # Fedora
     sudo dnf install -y \
@@ -41,5 +44,6 @@ elif command -v dnf &> /dev/null; then
         fd-find \
         fzf \
         fuse \
-        fuse-libs
+        fuse-libs \
+        gnupg2
 fi
