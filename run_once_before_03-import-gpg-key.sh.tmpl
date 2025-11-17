@@ -35,10 +35,10 @@ else
 fi
 
 # Set ultimate trust for the key
-KEY_ID=$(gpg --list-secret-keys --keyid-format=long | grep sec | awk '{print $2}' | cut -d'/' -f2 | head -n1)
-if [ -n "$KEY_ID" ]; then
-    echo "$KEY_ID:6:" | gpg --import-ownertrust
-    echo "✓ Set trust level for key: $KEY_ID"
+KEY_FINGERPRINT=$(gpg --list-secret-keys --with-colons | grep fpr | head -n1 | cut -d':' -f10)
+if [ -n "$KEY_FINGERPRINT" ]; then
+    echo "$KEY_FINGERPRINT:6:" | gpg --import-ownertrust
+    echo "✓ Set trust level for key: $KEY_FINGERPRINT"
 fi
 
 # Restart gpg-agent to pick up changes
